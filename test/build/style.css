@@ -191,5 +191,79 @@ section {
   padding: 100% 0 0;
 }
 
+.demo-wrap .labels li {
+  position: absolute;
+  font-size: 25px;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+.demo-wrap .labels li:nth-child(1) {
+  left: 73%;
+  top: 20%;
+  color: #303990;
+}
+
+.demo-wrap .labels li:nth-child(2) {
+  left: 89%;
+  top: 46.7%;
+  color: #EB8F00;
+}
+
+.demo-wrap .labels li:nth-child(3) {
+  left: 95%;
+  top: 60%;
+  color: #5BB446;
+}
+
+.demo-wrap .labels li:nth-child(4) {
+  left: 88.3%;
+  top: 67.8%;
+  color: #5CA3BC;
+}
+
+.demo-wrap .labels li:nth-child(5) {
+  left: 77.3%;
+  top: 71.8%;
+  color: #9E0855;
+}
+
+.demo-wrap .labels li:nth-child(6) {
+  left: 88.3%;
+  top: 85.8%;
+  color: #3A4232;
+}
+
+.demo-wrap .labels li:nth-child(7) {
+  left: 72.3%;
+  top: 87.2%;
+  color: #F9EB00;
+}
+
+.demo-wrap .labels li:nth-child(8) {
+  left: 55.3%;
+  top: 91.2%;
+  color: #B47CB9;
+}
+
+.demo-wrap .labels li:nth-child(9) {
+  left: 14.3%;
+  top: 74.8%;
+  color: #66A99B;
+}
+
+.demo-wrap .labels li:nth-child(10) {
+  left: 10.9%;
+  top: 20.5%;
+  color: #B5A3CA;
+}
+
+.demo-wrap .labels li:nth-child(11) {
+  left: 33.9%;
+  top: 23.9%;
+  color: #8AC7A2;
+}
+
 
 /*# sourceMappingURL=style.css.map*/

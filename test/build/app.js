@@ -7078,6 +7078,11 @@ __webpack_require__(110);
 $(document).ready(function () {
 
     $('.lem-charts-demo').lemCharts();
+
+    $('.lem-charts-demo').on('animationCompleted.lc', function () {
+        _gsap.TweenMax.to('.lem-charts-demo li', 0.1, { opacity: 1 });
+        // TweenMax.staggerTo('.lem-charts-demo li', 0.1, {opacity: 1}, 0.1);
+    });
 });
 
 /***/ }),
@@ -20145,9 +20150,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             //extend by function call
             self.settings = $.extend(true, {
-
                 base_radius: 160,
-                inner_radius: 35,
+                donut_hole_size: 35,
+                donut_hole_color: '#E9B100',
                 pies: [{
                     percent: 18.1,
                     radius_coeff: 1.2,
@@ -20240,6 +20245,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.context = self.canvas.getContext('2d');
 
+                self.context.lineJoin = self.context.lineCap = 'round';
+
                 self.canvas.width = self.$element.outerWidth();
                 self.canvas.height = self.$element.outerHeight();
 
@@ -20281,8 +20288,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (self.total_pecents > 100) {
                     console.warn('Total percents:' + self.total_pecents);
                 }
-
-                console.log(self.pies);
             }
         }, {
             key: 'on_resize',
@@ -20293,8 +20298,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var self = this;
 
                 self.pies.forEach(function (pie, index) {
-                    TweenMax.to(pie, 1, { current_end_angle: pie.end_angle });
-                    TweenMax.to(pie, 1, { current_radius: pie.radius });
+                    TweenMax.to(pie, .8, { current_end_angle: pie.end_angle, ease: Back.easeOut.config(1.7) });
+                    TweenMax.to(pie, .6, { current_radius: pie.radius, ease: Back.easeOut.config(1.7), delay: 0.2, onComplete: function onComplete() {
+                            if (index == self.pies.length - 1) {
+                                self.$element.trigger('animationCompleted.lc');
+                            }
+                        } });
                 });
             }
         }, {
@@ -20303,7 +20312,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var self = this;
 
                 self.pies.forEach(function (pie, index) {
-
                     //update start_angle for sticky effect
                     if (index > 0) {
                         pie.current_start_angle = self.pies[index - 1].current_end_angle;
@@ -20328,31 +20336,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.pies.forEach(function (pie) {
 
-                    // console.log(pie.color);
-                    // let start_angle = 0;
-                    // let end_angle = 360 / 100 * pie.percent;
+                    var current_start_angle_cos = Math.cos(Math.radians(pie.current_start_angle - 0.2 - 90));
+                    var current_start_angle_sin = Math.sin(Math.radians(pie.current_start_angle - 0.2 - 90));
 
-                    var current_start_angle_cos = Math.cos(Math.radians(pie.current_start_angle - 90));
-                    var current_start_angle_sin = Math.sin(Math.radians(pie.current_start_angle - 90));
-
-                    var current_end_angle_cos = Math.cos(Math.radians(pie.current_end_angle - 90));
-                    var current_end_angle_sin = Math.sin(Math.radians(pie.current_end_angle - 90));
+                    self.context.fillStyle = pie.color;
 
                     self.context.beginPath();
 
-                    self.context.moveTo(current_start_angle_cos * self.settings.inner_radius + canvas_center_x, current_start_angle_sin * self.settings.inner_radius + canvas_center_y);
+                    self.context.moveTo(canvas_center_x, canvas_center_y);
 
                     self.context.lineTo(current_start_angle_cos * self.settings.base_radius + canvas_center_x, current_start_angle_sin * self.settings.base_radius + canvas_center_y);
 
                     self.context.arc(canvas_center_x, canvas_center_y, pie.current_radius, Math.radians(pie.current_start_angle - 90), Math.radians(pie.current_end_angle - 90));
 
-                    self.context.lineTo(current_end_angle_cos * self.settings.inner_radius + canvas_center_x, current_end_angle_sin * self.settings.inner_radius + canvas_center_y);
-
-                    self.context.arc(canvas_center_x, canvas_center_y, self.settings.inner_radius, Math.radians(pie.current_start_angle - 90), Math.radians(pie.current_end_angle - 90));
-
-                    self.context.fillStyle = pie.color;
+                    self.context.lineTo(canvas_center_x, canvas_center_y);
 
                     self.context.fill();
+
+                    if (self.settings.donut_hole_size) {
+                        self.context.beginPath();
+
+                        self.context.fillStyle = self.settings.donut_hole_color;
+                        self.context.arc(canvas_center_x, canvas_center_y, self.settings.donut_hole_size, 0, 2 * Math.PI);
+
+                        self.context.fill();
+                    }
                 });
             }
         }, {

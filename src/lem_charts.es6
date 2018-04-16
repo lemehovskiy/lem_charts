@@ -21,9 +21,9 @@
 
             //extend by function call
             self.settings = $.extend(true, {
-
                 base_radius: 160,
-                inner_radius: 35,
+                donut_hole_size: 35,
+                donut_hole_color: '#E9B100',
                 pies: [
                     {
                         percent: 18.1,
@@ -96,6 +96,7 @@
             self.context = null;
             self.FPS = 30;
 
+
             self.pies = [];
 
             self.init();
@@ -134,6 +135,8 @@
 
             self.context = self.canvas.getContext('2d');
 
+            self.context.lineJoin = self.context.lineCap = 'round';
+
             self.canvas.width = self.$element.outerWidth();
             self.canvas.height = self.$element.outerHeight();
 
@@ -169,28 +172,28 @@
                     color: pie.color
                 })
 
-                angle_offset = angle_offset + 360 / 100 * pie.percent
+                angle_offset = (angle_offset + 360 / 100 * pie.percent)
             })
 
             if (self.total_pecents > 100) {
                 console.warn('Total percents:' + self.total_pecents);
             }
-
-            console.log(self.pies);
-
         }
 
         on_resize() {
 
         }
 
-
         animate(){
             let self = this;
 
             self.pies.forEach(function (pie, index) {
-                TweenMax.to(pie, 1, {current_end_angle: pie.end_angle});
-                TweenMax.to(pie, 1, {current_radius: pie.radius});
+                TweenMax.to(pie, .8, {current_end_angle: pie.end_angle, ease: Back.easeOut.config(1.7)});
+                TweenMax.to(pie, .6, {current_radius: pie.radius, ease: Back.easeOut.config(1.7), delay: 0.2, onComplete: function(){
+                    if (index == self.pies.length - 1) {
+                        self.$element.trigger('animationCompleted.lc');
+                    }
+                }});
             });
         }
 
@@ -198,8 +201,6 @@
             let self = this;
 
             self.pies.forEach(function (pie, index) {
-
-
                 //update start_angle for sticky effect
                 if (index > 0) {
                     pie.current_start_angle = self.pies[index - 1].current_end_angle;
@@ -213,7 +214,6 @@
             self.context.clearRect(0, 0, innerWidth, innerHeight);
         }
 
-
         render() {
 
             let self = this;
@@ -221,26 +221,18 @@
             let canvas_center_x = self.canvas.width / 2;
             let canvas_center_y = self.canvas.height / 2;
 
-
             self.pies.forEach(function (pie) {
 
-                // console.log(pie.color);
-                // let start_angle = 0;
-                // let end_angle = 360 / 100 * pie.percent;
+                let current_start_angle_cos = Math.cos(Math.radians(pie.current_start_angle - 0.2 - 90));
+                let current_start_angle_sin = Math.sin(Math.radians(pie.current_start_angle - 0.2 - 90));
 
-                let current_start_angle_cos = Math.cos(Math.radians(pie.current_start_angle - 90));
-                let current_start_angle_sin = Math.sin(Math.radians(pie.current_start_angle - 90));
-
-                let current_end_angle_cos = Math.cos(Math.radians(pie.current_end_angle - 90));
-                let current_end_angle_sin = Math.sin(Math.radians(pie.current_end_angle - 90));
-
+                self.context.fillStyle = pie.color;
 
                 self.context.beginPath();
 
-
                 self.context.moveTo(
-                    current_start_angle_cos * self.settings.inner_radius + canvas_center_x,
-                    current_start_angle_sin * self.settings.inner_radius + canvas_center_y
+                    canvas_center_x,
+                    canvas_center_y
                 );
 
                 self.context.lineTo(
@@ -257,26 +249,26 @@
                 );
 
                 self.context.lineTo(
-                    current_end_angle_cos * self.settings.inner_radius + canvas_center_x,
-                    current_end_angle_sin * self.settings.inner_radius + canvas_center_y
-                );
-
-
-
-                self.context.arc(
                     canvas_center_x,
-                    canvas_center_y,
-                    self.settings.inner_radius,
-                    Math.radians(pie.current_start_angle - 90),
-                    Math.radians(pie.current_end_angle - 90)
+                    canvas_center_y
                 );
-
-                self.context.fillStyle = pie.color;
 
                 self.context.fill();
 
+                if (self.settings.donut_hole_size) {
+                    self.context.beginPath();
 
+                    self.context.fillStyle = self.settings.donut_hole_color;
+                    self.context.arc(
+                        canvas_center_x,
+                        canvas_center_y,
+                        self.settings.donut_hole_size,
+                        0,
+                        2 * Math.PI
+                    );
 
+                    self.context.fill();
+                }
             })
         }
 

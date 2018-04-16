@@ -98,7 +98,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             //extend by function call
             self.settings = $.extend(true, {
 
-                test_property: false
+                pies: [{
+                    percent: 25,
+                    radius: 100
+                }, {
+                    percent: 10,
+                    radius: 200
+                }, {
+                    percent: 10,
+                    radius: 150
+                }, {
+                    percent: 10,
+                    radius: 50
+                }]
 
             }, options);
 
@@ -159,11 +171,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 var self = this;
 
-                self.pies.push({
-                    percent: 25,
-                    radius: 100
+                var angle_offset = 0;
 
+                self.settings.pies.forEach(function (pie) {
+
+                    console.log(angle_offset);
+
+                    self.pies.push({
+                        percent: pie.percent,
+                        radius: pie.radius,
+                        start_angle: angle_offset,
+                        end_angle: angle_offset + 360 / 100 * pie.percent,
+                        current_start_angle: angle_offset,
+                        current_end_angle: angle_offset
+                    });
+
+                    angle_offset = angle_offset + 360 / 100 * pie.percent;
                 });
+
+                console.log(self.pies);
             }
         }, {
             key: 'on_resize',
@@ -172,9 +198,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: 'update',
             value: function update() {
                 var self = this;
-                self.pies.forEach(function (pie) {
-                    TweenMax.to(pie, 5, { percent: 50 });
-                    TweenMax.to(pie, 5, { radius: 150 });
+
+                self.pies.forEach(function (pie, index) {
+
+                    if (index > 0) {
+                        pie.current_start_angle = self.pies[index - 1].current_end_angle;
+                    }
+
+                    TweenMax.to(pie, 1, { current_end_angle: pie.end_angle });
+                    // TweenMax.to(pie, 5, {radius: 150});
                 });
             }
         }, {
@@ -195,16 +227,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.pies.forEach(function (pie) {
 
-                    var start_angle = 0;
-                    var end_angle = 360 / 100 * pie.percent;
+                    // let start_angle = 0;
+                    // let end_angle = 360 / 100 * pie.percent;
+
 
                     self.context.beginPath();
 
                     self.context.moveTo(canvas_center_x, canvas_center_y);
 
-                    self.context.lineTo(Math.cos(Math.radians(start_angle - 90)) * pie.radius + canvas_center_x, Math.sin(Math.radians(start_angle - 90)) * pie.radius + canvas_center_y);
+                    self.context.lineTo(Math.cos(Math.radians(pie.current_start_angle - 90)) * pie.radius + canvas_center_x, Math.sin(Math.radians(pie.current_start_angle - 90)) * pie.radius + canvas_center_y);
 
-                    self.context.arc(canvas_center_x, canvas_center_y, pie.radius, Math.radians(start_angle - 90), Math.radians(end_angle - 90));
+                    self.context.arc(canvas_center_x, canvas_center_y, pie.radius, Math.radians(pie.current_start_angle - 90), Math.radians(pie.current_end_angle - 90));
 
                     self.context.lineTo(canvas_center_x, canvas_center_y);
 

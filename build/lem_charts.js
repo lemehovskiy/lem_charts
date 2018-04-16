@@ -98,18 +98,52 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             //extend by function call
             self.settings = $.extend(true, {
 
+                base_radius: 160,
+                inner_radius: 35,
                 pies: [{
-                    percent: 25,
-                    radius: 100
+                    percent: 18.1,
+                    radius_coeff: 1.2,
+                    color: '#303990'
                 }, {
-                    percent: 10,
-                    radius: 200
+                    percent: 10.7,
+                    radius_coeff: 1.5,
+                    color: '#EB8F00'
                 }, {
-                    percent: 10,
-                    radius: 150
+                    percent: 1.2,
+                    radius_coeff: 1.85,
+                    color: '#5BB446'
                 }, {
-                    percent: 10,
-                    radius: 50
+                    percent: 2.6,
+                    radius_coeff: 1.62,
+                    color: '#5CA3BC'
+                }, {
+                    percent: 5.6,
+                    radius_coeff: 1.41,
+                    color: '#9E0855'
+                }, {
+                    percent: 0.2,
+                    radius_coeff: 2.22,
+                    color: '#3A4232'
+                }, {
+                    percent: 0.8,
+                    radius_coeff: 1.9,
+                    color: '#F9EB00'
+                }, {
+                    percent: 6.5,
+                    radius_coeff: 1.6,
+                    color: '#B47CB9'
+                }, {
+                    percent: 38.4,
+                    radius_coeff: 1.2,
+                    color: '#66A99B'
+                }, {
+                    percent: 3.5,
+                    radius_coeff: 1.5,
+                    color: '#B5A3CA'
+                }, {
+                    percent: 12.4,
+                    radius_coeff: 1,
+                    color: '#8AC7A2'
                 }]
 
             }, options);
@@ -120,6 +154,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             self.data_options = self.$element.data('lem-charts');
             self.settings = $.extend(true, self.settings, self.data_options);
 
+            self.total_pecents = 0;
             self.canvas = null;
             self.context = null;
             self.FPS = 30;
@@ -164,6 +199,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.create_pies();
                 self.loop();
+
+                self.animate();
             }
         }, {
             key: 'create_pies',
@@ -175,25 +212,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.settings.pies.forEach(function (pie) {
 
-                    console.log(angle_offset);
+                    self.total_pecents += pie.percent;
+
+                    console.log(pie.percent);
 
                     self.pies.push({
                         percent: pie.percent,
-                        radius: pie.radius,
+                        radius: self.settings.base_radius * pie.radius_coeff,
+                        current_radius: self.settings.base_radius,
                         start_angle: angle_offset,
                         end_angle: angle_offset + 360 / 100 * pie.percent,
                         current_start_angle: 0,
-                        current_end_angle: 0
+                        current_end_angle: 0,
+                        color: pie.color
                     });
 
                     angle_offset = angle_offset + 360 / 100 * pie.percent;
                 });
+
+                if (self.total_pecents > 100) {
+                    console.warn('Total percents:' + self.total_pecents);
+                }
 
                 console.log(self.pies);
             }
         }, {
             key: 'on_resize',
             value: function on_resize() {}
+        }, {
+            key: 'animate',
+            value: function animate() {
+                var self = this;
+
+                self.pies.forEach(function (pie, index) {
+                    TweenMax.to(pie, 1, { current_end_angle: pie.end_angle });
+                    TweenMax.to(pie, 1, { current_radius: pie.radius });
+                });
+            }
         }, {
             key: 'update',
             value: function update() {
@@ -205,9 +260,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     if (index > 0) {
                         pie.current_start_angle = self.pies[index - 1].current_end_angle;
                     }
-
-                    TweenMax.to(pie, 1, { current_end_angle: pie.end_angle });
-                    // TweenMax.to(pie, 5, {radius: 150});
                 });
             }
         }, {
@@ -228,21 +280,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.pies.forEach(function (pie) {
 
+                    // console.log(pie.color);
                     // let start_angle = 0;
                     // let end_angle = 360 / 100 * pie.percent;
 
+                    var current_start_angle_cos = Math.cos(Math.radians(pie.current_start_angle - 90));
+                    var current_start_angle_sin = Math.sin(Math.radians(pie.current_start_angle - 90));
+
+                    var current_end_angle_cos = Math.cos(Math.radians(pie.current_end_angle - 90));
+                    var current_end_angle_sin = Math.sin(Math.radians(pie.current_end_angle - 90));
 
                     self.context.beginPath();
 
-                    self.context.moveTo(canvas_center_x, canvas_center_y);
+                    self.context.moveTo(current_start_angle_cos * self.settings.inner_radius + canvas_center_x, current_start_angle_sin * self.settings.inner_radius + canvas_center_y);
 
-                    self.context.lineTo(Math.cos(Math.radians(pie.current_start_angle - 90)) * pie.radius + canvas_center_x, Math.sin(Math.radians(pie.current_start_angle - 90)) * pie.radius + canvas_center_y);
+                    self.context.lineTo(current_start_angle_cos * self.settings.base_radius + canvas_center_x, current_start_angle_sin * self.settings.base_radius + canvas_center_y);
 
-                    self.context.arc(canvas_center_x, canvas_center_y, pie.radius, Math.radians(pie.current_start_angle - 90), Math.radians(pie.current_end_angle - 90));
+                    self.context.arc(canvas_center_x, canvas_center_y, pie.current_radius, Math.radians(pie.current_start_angle - 90), Math.radians(pie.current_end_angle - 90));
 
-                    self.context.lineTo(canvas_center_x, canvas_center_y);
+                    self.context.lineTo(current_end_angle_cos * self.settings.inner_radius + canvas_center_x, current_end_angle_sin * self.settings.inner_radius + canvas_center_y);
 
-                    self.context.stroke();
+                    self.context.arc(canvas_center_x, canvas_center_y, self.settings.inner_radius, Math.radians(pie.current_start_angle - 90), Math.radians(pie.current_end_angle - 90));
+
+                    self.context.fillStyle = pie.color;
+
+                    self.context.fill();
                 });
             }
         }, {

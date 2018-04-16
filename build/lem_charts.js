@@ -195,8 +195,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.context.lineJoin = self.context.lineCap = 'round';
 
-                self.canvas.width = self.$element.outerWidth();
-                self.canvas.height = self.$element.outerHeight();
+                self.canvas.width = 700;
+                self.canvas.height = 700;
 
                 window.onresize = self.on_resize;
 

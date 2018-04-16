@@ -182,8 +182,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         radius: pie.radius,
                         start_angle: angle_offset,
                         end_angle: angle_offset + 360 / 100 * pie.percent,
-                        current_start_angle: angle_offset,
-                        current_end_angle: angle_offset
+                        current_start_angle: 0,
+                        current_end_angle: 0
                     });
 
                     angle_offset = angle_offset + 360 / 100 * pie.percent;
@@ -201,6 +201,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.pies.forEach(function (pie, index) {
 
+                    //update start_angle for sticky effect
                     if (index > 0) {
                         pie.current_start_angle = self.pies[index - 1].current_end_angle;
                     }

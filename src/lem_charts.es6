@@ -24,6 +24,7 @@
                 base_radius: 160,
                 donut_hole_size: 35,
                 donut_hole_color: '#E9B100',
+                clip_animation_duration: 0.8,
                 pies: [
                     {
                         percent: 18.1,
@@ -169,7 +170,7 @@
                     current_start_angle: 0,
                     current_end_angle: 0,
                     color: pie.color,
-                    animation_time: 0.8 / 100 * pie.percent
+                    animation_time: self.settings.clip_animation_duration / 100 * pie.percent
                 })
 
                 angle_offset = (angle_offset + 360 / 100 * pie.percent)

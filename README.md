@@ -3,7 +3,7 @@ lem_charts
 
 ### Demo
 
-[https://lemehovskiy.github.io/lem_charts/demo](https://lemehovskiy.github.io/lem_charts/demo/)
+[https://lemehovskiy.github.io/lem_charts/test](https://lemehovskiy.github.io/lem_charts/test/)
 
 ### Browser support
 

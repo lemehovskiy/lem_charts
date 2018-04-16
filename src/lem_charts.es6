@@ -144,6 +144,7 @@
 
 
             self.create_pies();
+
             self.loop();
 
             self.animate();
@@ -159,8 +160,6 @@
 
                 self.total_pecents += pie.percent;
 
-                console.log(pie.percent);
-
                 self.pies.push({
                     percent: pie.percent,
                     radius: self.settings.base_radius * pie.radius_coeff,
@@ -169,7 +168,8 @@
                     end_angle: angle_offset + 360 / 100 * pie.percent,
                     current_start_angle: 0,
                     current_end_angle: 0,
-                    color: pie.color
+                    color: pie.color,
+                    animation_time: 0.8 / 100 * pie.percent
                 })
 
                 angle_offset = (angle_offset + 360 / 100 * pie.percent)
@@ -184,17 +184,26 @@
 
         }
 
-        animate(){
+        animate() {
             let self = this;
 
-            self.pies.forEach(function (pie, index) {
-                TweenMax.to(pie, .8, {current_end_angle: pie.end_angle, ease: Back.easeOut.config(1.7)});
-                TweenMax.to(pie, .6, {current_radius: pie.radius, ease: Back.easeOut.config(1.7), delay: 0.2, onComplete: function(){
-                    if (index == self.pies.length - 1) {
-                        self.$element.trigger('animationCompleted.lc');
-                    }
-                }});
+
+            let tl = new TimelineMax({
+                onComplete(){
+                    self.$element.trigger('animationCompleted.lc');
+                }
             });
+
+
+            self.pies.forEach(function (pie, index) {
+                tl.to(pie, pie.animation_time, {current_end_angle: pie.end_angle, ease: Linear.easeNone});
+
+                TweenMax.to(pie, 1.3, {
+                    current_radius: pie.radius
+                });
+            });
+
+
         }
 
         update() {
@@ -204,6 +213,10 @@
                 //update start_angle for sticky effect
                 if (index > 0) {
                     pie.current_start_angle = self.pies[index - 1].current_end_angle;
+
+                    if (pie.current_end_angle < pie.current_start_angle) {
+                        pie.current_end_angle = pie.current_start_angle;
+                    }
                 }
             })
         }
@@ -266,7 +279,6 @@
                         0,
                         2 * Math.PI
                     );
-
                     self.context.fill();
                 }
             })

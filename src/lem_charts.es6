@@ -153,12 +153,12 @@
         play(){
 
             let self = this;
-
-            self.played = true;
             
             if (!self.played) {
                 self.animate();   
             }
+
+            self.played = true;
 
         }
 
@@ -186,8 +186,6 @@
 
                 angle_offset = (angle_offset + 360 / 100 * pie.percent)
             })
-
-            console.log(self.pies);
 
             if (self.total_pecents > 100) {
                 console.warn('Total percents:' + self.total_pecents);

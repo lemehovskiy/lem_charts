@@ -96,6 +96,7 @@
             self.canvas = null;
             self.context = null;
             self.FPS = 30;
+            self.played = false;
 
 
             self.pies = [];
@@ -153,7 +154,11 @@
 
             let self = this;
 
-            self.animate();
+            self.played = true;
+            
+            if (!self.played) {
+                self.animate();   
+            }
 
         }
 

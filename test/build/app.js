@@ -12352,11 +12352,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     self.context.fill();
 
                     if (self.settings.donut_hole_size) {
+
+                        self.context.save();
+                        self.context.globalCompositeOperation = 'destination-out';
                         self.context.beginPath();
 
-                        self.context.fillStyle = self.settings.donut_hole_color;
                         self.context.arc(canvas_center_x, canvas_center_y, self.settings.donut_hole_size, 0, 2 * Math.PI);
                         self.context.fill();
+                        self.context.restore();
                     }
                 });
             }

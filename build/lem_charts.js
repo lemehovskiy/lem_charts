@@ -203,6 +203,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 self.create_pies();
 
                 self.loop();
+            }
+        }, {
+            key: 'play',
+            value: function play() {
+
+                var self = this;
 
                 self.animate();
             }
@@ -232,6 +238,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                     angle_offset = angle_offset + 360 / 100 * pie.percent;
                 });
+
+                console.log(self.pies);
 
                 if (self.total_pecents > 100) {
                     console.warn('Total percents:' + self.total_pecents);
@@ -292,6 +300,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var canvas_center_y = self.canvas.height / 2;
 
                 self.pies.forEach(function (pie) {
+
+                    if (pie.current_start_angle == pie.current_end_angle) {
+                        return;
+                    }
 
                     var current_start_angle_cos = Math.cos(Math.radians(pie.current_start_angle - 0.2 - 90));
                     var current_start_angle_sin = Math.sin(Math.radians(pie.current_start_angle - 0.2 - 90));

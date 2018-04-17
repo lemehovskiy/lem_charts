@@ -147,8 +147,14 @@
             self.create_pies();
 
             self.loop();
+        }
+
+        play(){
+
+            let self = this;
 
             self.animate();
+
         }
 
         create_pies() {
@@ -175,6 +181,8 @@
 
                 angle_offset = (angle_offset + 360 / 100 * pie.percent)
             })
+
+            console.log(self.pies);
 
             if (self.total_pecents > 100) {
                 console.warn('Total percents:' + self.total_pecents);
@@ -236,6 +244,10 @@
             let canvas_center_y = self.canvas.height / 2;
 
             self.pies.forEach(function (pie) {
+
+                if (pie.current_start_angle == pie.current_end_angle) {
+                    return;
+                }
 
                 let current_start_angle_cos = Math.cos(Math.radians(pie.current_start_angle - 0.2 - 90));
                 let current_start_angle_sin = Math.sin(Math.radians(pie.current_start_angle - 0.2 - 90));

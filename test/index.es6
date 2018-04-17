@@ -15,4 +15,12 @@ $(document).ready(function () {
         TweenMax.fromTo('.lem-charts-demo li', 0.3,{scale: 0.8}, {opacity: 1, scale: 1, ease: Back.easeOut.config(1.7)});
     })
 
+
+    $('.play-btn').on('click', function(){
+        $(this).fadeOut();
+        $('.lem-charts-demo').lemCharts('play');
+    })
+
+
+
 });
